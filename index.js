@@ -23,19 +23,22 @@ function generateQR() {
     }
 }
 
-function downloadQR() {
-    let imgUrl = qrImage.src;
-    fetch(imgUrl)
-        .then(response => response.blob())
-        .then(blob => {
-            let link = document.createElement('a');
-            let url = URL.createObjectURL(blob);
-            link.href = url;
-            link.download = 'qr-code.png';  // Force download as png file
-            document.body.appendChild(link);
-            link.click();  // Trigger the download
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);  // Release memory
-        })
-        .catch(error => console.error('Error fetching the QR code image:', error));
+async function downloadQR() {
+    try {
+        let imgUrl = qrImage.src;
+        let response = await fetch(imgUrl);
+        if (!response.ok) throw new Error('Network response was not ok');
+        let blob = await response.blob();
+        let link = document.createElement('a');
+        let url = URL.createObjectURL(blob);
+        link.href = url;
+        link.download = 'qr-code.png';  // Force download as png file
+        document.body.appendChild(link);
+        link.click();  // Trigger the download
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);  // Release memory
+    } 
+    catch (error) {
+        console.error('Error fetching the QR code image:', error);
+    }
 }
